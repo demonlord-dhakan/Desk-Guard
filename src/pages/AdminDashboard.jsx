@@ -1,12 +1,74 @@
 // src/pages/AdminDashboard.jsx
-import { WeeklyUtilizationChart, PeakHoursChart } from '../components/AnalyticsCharts';
-import { WEEKLY_UTILIZATION, PEAK_USAGE_HOURS } from '../data/mockData';
-import { Clock, TrendingUp, Sparkles, AlertTriangle, RefreshCw, XCircle } from 'lucide-react';
-import '../styles/AdminDashboard.css';
+import { useState, useEffect } from "react";
+import {
+  WeeklyUtilizationChart,
+  PeakHoursChart,
+} from "../components/AnalyticsCharts";
+import * as apiClient from "../api/apiClient";
+import {
+  Clock,
+  TrendingUp,
+  Sparkles,
+  AlertTriangle,
+  RefreshCw,
+  XCircle,
+} from "lucide-react";
+import "../styles/AdminDashboard.css";
+
+// Fallback data for analytics if API doesn't provide it
+const FALLBACK_PEAK_USAGE_HOURS = [
+  { hour: "08:00 AM", percentage: 25 },
+  { hour: "10:00 AM", percentage: 55 },
+  { hour: "12:00 PM", percentage: 78 },
+  { hour: "02:00 PM", percentage: 88 },
+  { hour: "04:00 PM", percentage: 84 },
+  { hour: "06:00 PM", percentage: 70 },
+  { hour: "08:00 PM", percentage: 45 },
+  { hour: "10:00 PM", percentage: 15 },
+];
+
+const FALLBACK_WEEKLY_UTILIZATION = [
+  { day: "Mon", rate: 72 },
+  { day: "Tue", rate: 78 },
+  { day: "Wed", rate: 85 },
+  { day: "Thu", rate: 81 },
+  { day: "Fri", rate: 64 },
+  { day: "Sat", rate: 45 },
+  { day: "Sun", rate: 38 },
+];
 
 export default function AdminDashboard({ desks, onStatusChange }) {
+  const [peakHours, setPeakHours] = useState(FALLBACK_PEAK_USAGE_HOURS);
+  const [weeklyUtilization, setWeeklyUtilization] = useState(
+    FALLBACK_WEEKLY_UTILIZATION,
+  );
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
+
+  // Fetch analytics data from backend
+  useEffect(() => {
+    const loadAnalytics = async () => {
+      try {
+        setAnalyticsLoading(true);
+        const stats = await apiClient.fetchStatistics();
+
+        if (stats.peak_hours && stats.peak_hours.length > 0) {
+          setPeakHours(stats.peak_hours);
+        }
+        if (stats.weekly_utilization && stats.weekly_utilization.length > 0) {
+          setWeeklyUtilization(stats.weekly_utilization);
+        }
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+        // Use fallback data on error
+      } finally {
+        setAnalyticsLoading(false);
+      }
+    };
+
+    loadAnalytics();
+  }, []);
   // Get all desks currently away
-  const awayDesks = desks.filter((d) => d.status === 'away');
+  const awayDesks = desks.filter((d) => d.status === "away");
 
   // Helper to extract numbers from "X mins away" for visual warnings
   const getAwayMinutes = (lastActiveText) => {
@@ -16,7 +78,7 @@ export default function AdminDashboard({ desks, onStatusChange }) {
   };
 
   const handleRelease = (deskId) => {
-    onStatusChange(deskId, 'free');
+    onStatusChange(deskId, "free");
   };
 
   return (
@@ -24,7 +86,10 @@ export default function AdminDashboard({ desks, onStatusChange }) {
       <div className="page-header animate-fade-in">
         <div>
           <h2 className="page-title">Admin Management Console</h2>
-          <p className="page-subtitle">Historical usage trends, peak optimization, and active room management.</p>
+          <p className="page-subtitle">
+            Historical usage trends, peak optimization, and active room
+            management.
+          </p>
         </div>
         <div className="admin-badge glass-panel">
           <TrendingUp size={14} className="text-blue" />
@@ -71,11 +136,11 @@ export default function AdminDashboard({ desks, onStatusChange }) {
       {/* Custom Charts Grid */}
       <div className="admin-charts-grid">
         <div className="glass-panel chart-card-wrapper animate-fade-in">
-          <WeeklyUtilizationChart data={WEEKLY_UTILIZATION} />
+          <WeeklyUtilizationChart data={weeklyUtilization} />
         </div>
-        
+
         <div className="glass-panel chart-card-wrapper animate-fade-in">
-          <PeakHoursChart data={PEAK_USAGE_HOURS} />
+          <PeakHoursChart data={peakHours} />
         </div>
       </div>
 
@@ -86,7 +151,8 @@ export default function AdminDashboard({ desks, onStatusChange }) {
           <div>
             <h3 className="card-title">Away Desk Exceeded Time Limits</h3>
             <p className="card-description">
-              Students marked "Away" for over 30 minutes. You can manually release these desks to restore availability.
+              Students marked "Away" for over 30 minutes. You can manually
+              release these desks to restore availability.
             </p>
           </div>
         </div>
@@ -101,40 +167,51 @@ export default function AdminDashboard({ desks, onStatusChange }) {
                   <th>Student Name</th>
                   <th>Away Duration</th>
                   <th>Status Warning</th>
-                  <th style={{ textAlign: 'right' }}>Actions</th>
+                  <th style={{ textAlign: "right" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {awayDesks.map((desk) => {
                   const awayMins = getAwayMinutes(desk.lastActive);
                   const isOverLimit = awayMins >= 30;
-                  
+
                   return (
-                    <tr key={desk.id} className={isOverLimit ? 'row-critical' : ''}>
+                    <tr
+                      key={desk.id}
+                      className={isOverLimit ? "row-critical" : ""}
+                    >
                       <td>
-                        <span className="table-desk-num">Desk {desk.id < 10 ? `0${desk.id}` : desk.id}</span>
+                        <span className="table-desk-num">
+                          Desk {desk.id < 10 ? `0${desk.id}` : desk.id}
+                        </span>
                       </td>
                       <td>{desk.zone}</td>
                       <td>
-                        <span className="table-student-name">{desk.studentName}</span>
+                        <span className="table-student-name">
+                          {desk.studentName}
+                        </span>
                       </td>
                       <td>
-                        <span className={`away-time-badge ${isOverLimit ? 'badge-critical' : 'badge-warning'}`}>
+                        <span
+                          className={`away-time-badge ${isOverLimit ? "badge-critical" : "badge-warning"}`}
+                        >
                           {desk.lastActive}
                         </span>
                       </td>
                       <td>
                         {isOverLimit ? (
                           <span className="text-critical flex-align">
-                            <XCircle size={14} className="icon-gap" /> Over 30m Limit
+                            <XCircle size={14} className="icon-gap" /> Over 30m
+                            Limit
                           </span>
                         ) : (
                           <span className="text-warning flex-align">
-                            <Clock size={14} className="icon-gap" /> Within Grace Period
+                            <Clock size={14} className="icon-gap" /> Within
+                            Grace Period
                           </span>
                         )}
                       </td>
-                      <td style={{ textAlign: 'right' }}>
+                      <td style={{ textAlign: "right" }}>
                         <button
                           onClick={() => handleRelease(desk.id)}
                           className="btn-table-release"
@@ -153,7 +230,10 @@ export default function AdminDashboard({ desks, onStatusChange }) {
             <div className="abandoned-empty-state">
               <CheckCircleIcon />
               <h4>No desks are currently in "Away" status.</h4>
-              <p>When a student marks a desk away, it will show up here for administrative oversight.</p>
+              <p>
+                When a student marks a desk away, it will show up here for
+                administrative oversight.
+              </p>
             </div>
           )}
         </div>
@@ -164,7 +244,17 @@ export default function AdminDashboard({ desks, onStatusChange }) {
 
 function CheckCircleIcon() {
   return (
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green">
+    <svg
+      width="32"
+      height="32"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="text-green"
+    >
       <circle cx="12" cy="12" r="10" />
       <path d="m9 12 2 2 4-4" />
     </svg>

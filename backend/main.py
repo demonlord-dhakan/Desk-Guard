@@ -1,6 +1,7 @@
 import asyncio
 from datetime import datetime, timedelta
 from enum import Enum
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
@@ -145,6 +146,18 @@ async def lifespan(app: FastAPI):
     bg_task.cancel()
 
 app = FastAPI(lifespan=lifespan)
+
+# Configure CORS middleware to allow requests from React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ==========================================
 # PYDANTIC SCHEMAS (Request Validation)
