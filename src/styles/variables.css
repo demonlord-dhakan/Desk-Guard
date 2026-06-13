@@ -16,7 +16,7 @@
   
   /* Accent Colors */
   --primary: #3b82f6;
-  --primary-glow: rgba(59, 130, 246, 0.25);
+  --primary-glow: rgba(59,130,246,.15);
   --primary-hover: #2563eb;
   
   --secondary: #8b5cf6;

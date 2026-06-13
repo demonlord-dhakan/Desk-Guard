@@ -3,6 +3,7 @@ import { useState } from 'react';
 import MetricCard from '../components/MetricCard';
 import { Library, UserCheck, CheckCircle, Coffee, Percent, Activity, Search, HelpCircle } from 'lucide-react';
 import '../styles/Dashboard.css';
+import QRCodeCard from "../components/QRCodeCard";
 
 export default function Dashboard({ desks, stats, activities, setActivePage, setSelectedDesk }) {
   const [searchQuery, setSearchQuery] = useState('');

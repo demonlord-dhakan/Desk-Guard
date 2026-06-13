@@ -22,11 +22,9 @@ export const INITIAL_DESKS = Array.from({ length: 50 }, (_, index) => {
   if (occupiedIds.includes(id)) {
     status = 'occupied';
     const names = [
-      'Liam Carter', 'Emma Watson', 'Noah Davis', 'Olivia Martinez', 'Sophia Vance',
-      'James Miller', 'Isabella Garcia', 'Lucas Rodriguez', 'Mia Chen', 'Alexander Kim',
-      'Charlotte Brooks', 'Ethan Hunt', 'Amelia Rose', 'Benjamin Cole', 'Harper Lee',
-      'Daniel Park', 'Ava Vance'
-    ];
+  'Aditya Aryan','Vishad Srivastava','Holliyan Yadav','Ajitesh Tigga','Jatin Surana','Rajat Dalal','Aryan Singh','Aarav Tiwari','Karan Patel','Rohan Verma','Ananya Mishra','Priya Gupta','Riya Sharma','Shivam Dubey','Yash Raj',
+  'Akash Singh','Harsh Vardhan'
+];
     const studentIdx = occupiedIds.indexOf(id) % names.length;
     studentName = names[studentIdx];
     studentId = `STU-${8000 + id * 13}`;
@@ -35,9 +33,14 @@ export const INITIAL_DESKS = Array.from({ length: 50 }, (_, index) => {
   } else if (awayIds.includes(id)) {
     status = 'away';
     const names = [
-      'Evelyn Moore', 'Mason Taylor', 'Harper Lewis', 'Logan Wright', 
-      'Avery Scott', 'Sebastian Hill', 'Ella Green'
-    ];
+  'Aditya Aryan',
+  'Vishad Srivastava',
+  'Holliyan Yadav',
+  'Ajitesh Tigga',
+  'Jatin Surana',
+  'Rajat Dalal',
+  'Aryan Singh'
+];
     const studentIdx = awayIds.indexOf(id) % names.length;
     studentName = names[studentIdx];
     studentId = `STU-${9000 + id * 17}`;
@@ -83,10 +86,10 @@ export const WEEKLY_UTILIZATION = [
 ];
 
 export const INITIAL_ACTIVITIES = [
-  { id: 1, deskId: 14, studentName: 'Sophia Vance', action: 'Checked in', time: '10 mins ago' },
-  { id: 2, deskId: 35, studentName: 'Avery Scott', action: 'Marked Away', time: '15 mins ago' },
-  { id: 3, deskId: 8, studentName: 'Noah Davis', action: 'Checked in', time: '28 mins ago' },
-  { id: 4, deskId: 27, studentName: 'Logan Wright', action: 'Left desk (Away)', time: '48 mins ago' },
-  { id: 5, deskId: 22, studentName: 'Lucas Rodriguez', action: 'Checked in', time: '1 hr ago' },
-  { id: 6, deskId: 11, studentName: 'Mason Taylor', action: 'Left desk (Away)', time: '35 mins ago' }
+  { id: 1, deskId: 14, studentName: 'Aditya Aryan', action: 'Checked in', time: '10 mins ago' },
+  { id: 2, deskId: 35, studentName: 'Vishad Srivastava', action: 'Marked Away', time: '15 mins ago' },
+  { id: 3, deskId: 8, studentName: 'Holliyan Yadav', action: 'Checked in', time: '28 mins ago' },
+  { id: 4, deskId: 27, studentName: 'Ajitesh Tigga', action: 'Left desk (Away)', time: '48 mins ago' },
+  { id: 5, deskId: 22, studentName: 'Jatin Surana', action: 'Checked in', time: '1 hr ago' },
+  { id: 6, deskId: 11, studentName: 'Rajat Dalal', action: 'Left desk (Away)', time: '35 mins ago' }
 ];
