@@ -1,0 +1,111 @@
+/* src/styles/Components.css */
+
+/* Metric Cards */
+.metric-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  min-height: 110px;
+}
+
+.metric-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.metric-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.metric-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.metric-subtext {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.metric-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Metric Types and Accents */
+.metric-type-primary {
+  background-color: var(--primary-glow);
+  color: var(--primary);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.metric-type-secondary {
+  background-color: var(--secondary-glow);
+  color: var(--secondary);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.metric-type-free {
+  background-color: var(--color-free-glow);
+  color: var(--color-free);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.metric-type-occupied {
+  background-color: var(--color-occupied-glow);
+  color: var(--color-occupied);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.metric-type-away {
+  background-color: var(--color-away-glow);
+  color: var(--color-away);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Circular Chart SVG Progress */
+.circular-chart {
+  display: block;
+  max-width: 100%;
+  max-height: 60px;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 2.8;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  transition: stroke-dasharray var(--transition-slow);
+}
+
+.percentage {
+  fill: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: 8px;
+  font-weight: 700;
+  text-anchor: middle;
+}
