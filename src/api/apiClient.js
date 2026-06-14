@@ -160,8 +160,9 @@ export const checkInDesk = async (deskNumber, studentName, studentId) => {
         }),
       },
     );
+    // Return raw backend response (message) on success. The app will re-fetch full state.
     const data = await handleResponse(response);
-    return transformDesk(data);
+    return data;
   } catch (error) {
     console.error(`Error checking in desk ${deskNumber}:`, error);
     throw error;
@@ -178,8 +179,9 @@ export const markDeskAway = async (deskNumber, userId) => {
         user_id: userId,
       }),
     });
+    // Return raw backend response (message) on success. The app will re-fetch full state.
     const data = await handleResponse(response);
-    return transformDesk(data);
+    return data;
   } catch (error) {
     console.error(`Error marking desk ${deskNumber} away:`, error);
     throw error;
@@ -199,8 +201,9 @@ export const releaseDesk = async (deskNumber, userId) => {
         }),
       },
     );
+    // Return raw backend response (message) on success. The app will re-fetch full state.
     const data = await handleResponse(response);
-    return transformDesk(data);
+    return data;
   } catch (error) {
     console.error(`Error releasing desk ${deskNumber}:`, error);
     throw error;
@@ -216,8 +219,9 @@ export const resetDesk = async (deskNumber) => {
         headers: { "Content-Type": "application/json" },
       },
     );
+    // Return raw backend response (message) on success. The app will re-fetch full state.
     const data = await handleResponse(response);
-    return transformDesk(data);
+    return data;
   } catch (error) {
     console.error(`Error resetting desk ${deskNumber}:`, error);
     throw error;

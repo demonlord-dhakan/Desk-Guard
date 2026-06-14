@@ -74,9 +74,7 @@ def get_db():
 # ==========================================
 async def desk_sweeper():
     """
-    Runs every 60 seconds. Checks for:
-    1. Desks in 'AWAY' state that exceeded the 20-minute limit.
-    2. Desks in 'OCCUPIED' state that missed their 2-hour check-in ping.
+    Runs every 60 seconds. Checks for desks in 'AWAY' state that exceeded the 20-minute limit.
     """
     while True:
         await asyncio.sleep(60) # Run every minute
@@ -98,24 +96,7 @@ async def desk_sweeper():
                 
                 log_activity(db, desk.desk_number, "AUTO_RELEASED_AWAY", None)
                 print(f"[Sweeper] Desk {desk.desk_number} automatically freed from AWAY timeout.")
-            
-            # 2. Handle Missed 2-Hour Pings (Occupied but abandoned)
-            two_hours_ago = now - timedelta(hours=2)
-            abandoned_desks = db.query(Desk).filter(
-                Desk.status == DeskStatus.OCCUPIED.value,
-                Desk.last_ping < two_hours_ago
-            ).all()
-            
-            for desk in abandoned_desks:
-                desk.status = DeskStatus.FREE.value
-                desk.current_user = None
-                desk.last_ping = None
-                desk.away_expires_at = None
-                
-                log_activity(db, desk.desk_number, "AUTO_RELEASED_ABANDONED", None)
-                print(f"[Sweeper] Desk {desk.desk_number} automatically freed due to missed 2hr check-in.")
-            
-            if expired_away_desks or abandoned_desks:
+            if expired_away_desks:
                 db.commit()
                 
         except Exception as e:
@@ -151,15 +132,14 @@ app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "https://desk-guard-mmkj63x0u-demon-lord-dhukun-s-projects.vercel.app",
-],
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "https://desk-guard.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # ==========================================
 # PYDANTIC SCHEMAS (Request Validation)
 # ==========================================
@@ -209,7 +189,7 @@ def go_away(desk_number: str, payload: CheckInRequest, db: Session = Depends(get
         raise HTTPException(status_code=403, detail="Unauthorized action on this desk")
         
     desk.status = DeskStatus.AWAY.value
-    desk.away_expires_at = datetime.utcnow() + timedelta(minutes=20)
+    desk.away_expires_at = datetime.utcnow() + timedelta(seconds=30)
     db.commit()
     log_activity(
         db,

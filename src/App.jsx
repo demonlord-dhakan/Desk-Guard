@@ -70,83 +70,29 @@ export default function App() {
       }
 
       const deskNumber = desk.desk_number;
-      let updatedDesk;
-
-      // Call appropriate API endpoint based on new status
+      // Call appropriate API endpoint based on new status.
+      // After a successful API response, re-fetch full application state
+      // from the backend to avoid optimistic inconsistencies.
       if (newStatus === "occupied") {
-        // Check in: requires student name and ID
-        updatedDesk = await apiClient.checkInDesk(
-          deskNumber,
-          studentName,
-          studentId,
-        );
+        await apiClient.checkInDesk(deskNumber, studentName, studentId);
       } else if (newStatus === "away") {
-        // Mark as away: requires user_id for authentication
         const userId = studentId || studentName || desk.studentName || null;
-        if (!userId) {
-          throw new Error("Unable to mark away: no user information available");
-        }
-        updatedDesk = await apiClient.markDeskAway(deskNumber, userId);
+        if (!userId) throw new Error("Unable to mark away: no user information available");
+        await apiClient.markDeskAway(deskNumber, userId);
       } else if (newStatus === "free") {
-        // Release desk: requires user_id for authentication
         const userId = studentId || studentName || desk.studentName || null;
-        if (!userId) {
-          throw new Error("Unable to release: no user information available");
-        }
-        updatedDesk = await apiClient.releaseDesk(deskNumber, userId);
+        if (!userId) throw new Error("Unable to release: no user information available");
+        await apiClient.releaseDesk(deskNumber, userId);
       }
 
-      if (updatedDesk) {
-        // 1. Update Desks State
-        setDesks((prevDesks) => {
-          const updated = prevDesks.map((d) => {
-            if (d.id === deskId) {
-              // Use API response data, but preserve any frontend-specific fields
-              const result = {
-                ...updatedDesk,
-                // Override with provided values if needed
-                lastActive:
-                  newStatus === "away"
-                    ? lastActive || updatedDesk.lastActive || "Recently left"
-                    : updatedDesk.lastActive,
-              };
-
-              // Update selected desk reference if it's currently open
-              if (selectedDesk && selectedDesk.id === deskId) {
-                setSelectedDesk(result);
-              }
-
-              return result;
-            }
-            return d;
-          });
-          return updated;
-        });
-
-        // 2. Create Activity Log Description
-        let actionDesc = "Released";
-        let actorName = "System";
-
-        if (newStatus === "occupied") {
-          actionDesc = "Checked in";
-          actorName = studentName || "Student";
-        } else if (newStatus === "away") {
-          actionDesc = "Marked Away";
-          actorName = studentName || desk.studentName || "Student";
-        } else if (newStatus === "free") {
-          actionDesc = "Checked out";
-          actorName = studentName || desk.studentName || "Student";
-        }
-
-        const newActivity = {
-          id: Date.now(),
-          deskId,
-          studentName: actorName,
-          action: actionDesc,
-          time: "Just now",
-        };
-
-        setActivities((prev) => [newActivity, ...prev]);
+      // Re-fetch full data to synchronize desks, activities, and stats
+      const data = await apiClient.fetchInitialData();
+      setDesks(data.desks);
+      setActivities(data.activities);
+      // Preserve selected desk if it still exists
+      if (selectedDesk) {
+        const refreshed = data.desks.find((d) => d.id === selectedDesk.id) || null;
+        setSelectedDesk(refreshed);
       }
     } catch (error) {
       console.error(`Error changing desk status:`, error);
