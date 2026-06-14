@@ -136,7 +136,7 @@ app.add_middleware(
         "http://localhost:5174",
         "https://desk-guard.vercel.app",
     ],
-    allow_credentials=True,
+    allow_credentials=false,
     allow_methods=["*"],
     allow_headers=["*"],
 )
