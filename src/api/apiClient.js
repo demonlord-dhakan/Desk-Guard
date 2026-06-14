@@ -1,7 +1,7 @@
 // src/api/apiClient.js
 // Centralized API client for FastAPI backend communication
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "https://desk-guard-1.onrender.com";
 
 // ============================================================================
 // UTILITY FUNCTIONS
